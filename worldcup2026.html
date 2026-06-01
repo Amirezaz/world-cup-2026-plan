@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برنامه جام جهانی ۲۰۲۶</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --dark: #0a0e1a;
+    --dark2: #111827;
+    --dark3: #1a2235;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--dark);
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a2235 50%, #0f172a 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 24px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.15) 0%, transparent 70%);
+  }
+  header h1 {
+    font-size: clamp(1.4rem, 5vw, 2.2rem);
+    font-weight: 900;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    position: relative;
+  }
+  header p {
+    color: #94a3b8;
+    margin-top: 6px;
+    font-size: 0.9rem;
+    position: relative;
+  }
+  .trophy { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 12px 12px 0;
+    background: var(--dark2);
+    scrollbar-width: none;
+    border-bottom: 1px solid #1e293b;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active {
+    background: var(--dark3);
+    color: var(--gold-light);
+    border-bottom: 2px solid var(--gold);
+  }
+  .tab:hover:not(.active) { color: #cbd5e1; background: rgba(255,255,255,0.05); }
+
+  .content {
+    padding: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Groups grid */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .group-card {
+    background: var(--dark2);
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .group-card:hover { transform: translateY(-2px); border-color: #334155; }
+  .group-header {
+    background: linear-gradient(90deg, #1e3a5f, #1a2235);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .group-letter {
+    width: 32px; height: 32px;
+    background: var(--gold);
+    color: #000;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .group-header h3 { font-size: 0.8rem; color: #94a3b8; }
+  .team-list { padding: 10px 14px; }
+  .team-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #1e293b;
+    font-size: 0.9rem;
+  }
+  .team-item:last-child { border-bottom: none; }
+  .flag { font-size: 1.2rem; }
+
+  /* Schedule */
+  .match-card {
+    background: var(--dark2);
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.2s;
+  }
+  .match-card:hover { border-color: #334155; }
+  .match-date {
+    text-align: center;
+    min-width: 52px;
+    flex-shrink: 0;
+  }
+  .match-date .day { font-size: 1.3rem; font-weight: 900; color: var(--gold-light); line-height: 1; }
+  .match-date .month { font-size: 0.7rem; color: #64748b; }
+  .match-teams {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .vs { color: #475569; font-size: 0.75rem; margin: 0 4px; }
+  .match-info { font-size: 0.7rem; color: #64748b; text-align: left; min-width: 80px; }
+  .match-group {
+    background: #1e3a5f;
+    color: #60a5fa;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .day-label {
+    font-size: 0.8rem;
+    color: var(--gold);
+    font-weight: 700;
+    padding: 14px 0 6px;
+    border-bottom: 1px solid #1e293b;
+    margin-bottom: 8px;
+  }
+
+  /* Knockout */
+  .round-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    padding: 16px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .round-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .ko-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .ko-match {
+    background: var(--dark2);
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+  .ko-match .ko-date { color: #64748b; font-size: 0.75rem; margin-bottom: 4px; }
+  .ko-match .ko-teams { font-weight: 600; }
+  .ko-match .ko-venue { color: #94a3b8; font-size: 0.72rem; margin-top: 4px; }
+
+  .final-card {
+    background: linear-gradient(135deg, #1a2235, #1e3a5f);
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .final-card .final-title { color: var(--gold-light); font-size: 1.2rem; font-weight: 900; }
+  .final-card .final-date { color: #94a3b8; margin-top: 4px; }
+  .final-card .final-venue { color: #cbd5e1; margin-top: 6px; font-size: 0.9rem; }
+
+  .iran-card {
+    background: linear-gradient(135deg, #1a2235, #1e3350);
+    border: 1px solid #2d5a3d;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .iran-card h3 { color: #4ade80; font-size: 1rem; margin-bottom: 10px; }
+  .iran-match {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1e293b;
+  }
+  .iran-match:last-child { border-bottom: none; }
+  .iran-match-date { min-width: 70px; font-size: 0.8rem; color: var(--gold); }
+  .iran-match-opp { flex: 1; font-weight: 600; }
+  .iran-match-city { font-size: 0.75rem; color: #64748b; }
+
+  .info-box {
+    background: var(--dark2);
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+  .info-box h3 { color: var(--gold-light); margin-bottom: 8px; font-size: 0.95rem; }
+  .badge {
+    display: inline-block;
+    background: #1e3a5f;
+    color: #60a5fa;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    margin: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="trophy">🏆</span>
+  <h1>جام جهانی فیفا ۲۰۲۶</h1>
+  <p>آمریکا • کانادا • مکزیک &nbsp;|&nbsp; ۱۱ ژوئن تا ۱۹ ژوئیه ۲۰۲۶</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showSection('groups')">🌍 گروه‌ها</button>
+  <button class="tab" onclick="showSection('iran')">🇮🇷 ایران</button>
+  <button class="tab" onclick="showSection('schedule')">📅 برنامه گروهی</button>
+  <button class="tab" onclick="showSection('knockout')">⚔️ حذفی‌ها</button>
+  <button class="tab" onclick="showSection('info')">ℹ️ اطلاعات</button>
+</div>
+
+<div class="content">
+
+<!-- GROUPS -->
+<div class="section active" id="groups">
+  <div class="groups-grid">
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">A</div><h3>گروه A</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇲🇽</span> مکزیک</div>
+        <div class="team-item"><span class="flag">🇿🇦</span> آفریقای جنوبی</div>
+        <div class="team-item"><span class="flag">🇰🇷</span> کره جنوبی</div>
+        <div class="team-item"><span class="flag">🇨🇿</span> چکیا</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">B</div><h3>گروه B</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇨🇦</span> کانادا</div>
+        <div class="team-item"><span class="flag">🇨🇭</span> سوئیس</div>
+        <div class="team-item"><span class="flag">🇶🇦</span> قطر</div>
+        <div class="team-item"><span class="flag">🇧🇦</span> بوسنی و هرزگوین</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">C</div><h3>گروه C</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇧🇷</span> برزیل</div>
+        <div class="team-item"><span class="flag">🇲🇦</span> مراکش</div>
+        <div class="team-item"><span class="flag">🇭🇹</span> هائیتی</div>
+        <div class="team-item"><span class="flag">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span> اسکاتلند</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">D</div><h3>گروه D</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇺🇸</span> آمریکا (میزبان)</div>
+        <div class="team-item"><span class="flag">🇵🇾</span> پاراگوئه</div>
+        <div class="team-item"><span class="flag">🇦🇺</span> استرالیا</div>
+        <div class="team-item"><span class="flag">🇹🇷</span> ترکیه</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">E</div><h3>گروه E</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇩🇪</span> آلمان</div>
+        <div class="team-item"><span class="flag">🇨🇼</span> کوراسائو</div>
+        <div class="team-item"><span class="flag">🇨🇮</span> ساحل عاج</div>
+        <div class="team-item"><span class="flag">🇪🇨</span> اکوادور</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">F</div><h3>گروه F</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇳🇱</span> هلند</div>
+        <div class="team-item"><span class="flag">🇯🇵</span> ژاپن</div>
+        <div class="team-item"><span class="flag">🇹🇳</span> تونس</div>
+        <div class="team-item"><span class="flag">🇸🇪</span> سوئد</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">G</div><h3>گروه G — ایران</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇧🇪</span> بلژیک</div>
+        <div class="team-item"><span class="flag">🇪🇬</span> مصر</div>
+        <div class="team-item"><span class="flag">🇮🇷</span> ایران</div>
+        <div class="team-item"><span class="flag">🇳🇿</span> نیوزیلند</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">H</div><h3>گروه H</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇪🇸</span> اسپانیا ⭐</div>
+        <div class="team-item"><span class="flag">🇨🇻</span> کیپ ورد</div>
+        <div class="team-item"><span class="flag">🇸🇦</span> عربستان</div>
+        <div class="team-item"><span class="flag">🇺🇾</span> اروگوئه</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">I</div><h3>گروه I</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇫🇷</span> فرانسه ⭐</div>
+        <div class="team-item"><span class="flag">🇸🇳</span> سنگال</div>
+        <div class="team-item"><span class="flag">🇳🇴</span> نروژ</div>
+        <div class="team-item"><span class="flag">🇮🇶</span> عراق</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">J</div><h3>گروه J</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇦🇷</span> آرژانتین ⭐</div>
+        <div class="team-item"><span class="flag">🇩🇿</span> الجزایر</div>
+        <div class="team-item"><span class="flag">🇦🇹</span> اتریش</div>
+        <div class="team-item"><span class="flag">🇯🇴</span> اردن</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">K</div><h3>گروه K</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🇵🇹</span> پرتغال</div>
+        <div class="team-item"><span class="flag">🇺🇿</span> ازبکستان</div>
+        <div class="team-item"><span class="flag">🇨🇴</span> کلمبیا</div>
+        <div class="team-item"><span class="flag">🇨🇩</span> کنگو</div>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-header"><div class="group-letter">L</div><h3>گروه L</h3></div>
+      <div class="team-list">
+        <div class="team-item"><span class="flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> انگلیس</div>
+        <div class="team-item"><span class="flag">🇭🇷</span> کرواسی</div>
+        <div class="team-item"><span class="flag">🇬🇭</span> غنا</div>
+        <div class="team-item"><span class="flag">🇵🇦</span> پاناما</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IRAN -->
+<div class="section" id="iran">
+  <div class="iran-card">
+    <h3>🇮🇷 بازی‌های ایران — گروه G</h3>
+    <div class="iran-match">
+      <div class="iran-match-date">۱۵ ژوئن</div>
+      <div class="iran-match-opp">🇮🇷 ایران <span style="color:#475569"> در برابر </span> 🇳🇿 نیوزیلند</div>
+      <div class="iran-match-city">لس‌آنجلس</div>
+    </div>
+    <div class="iran-match">
+      <div class="iran-match-date">۲۱ ژوئن</div>
+      <div class="iran-match-opp">🇧🇪 بلژیک <span style="color:#475569"> در برابر </span> 🇮🇷 ایران</div>
+      <div class="iran-match-city">لس‌آنجلس</div>
+    </div>
+    <div class="iran-match">
+      <div class="iran-match-date">۲۶ ژوئن</div>
+      <div class="iran-match-opp">🇪🇬 مصر <span style="color:#475569"> در برابر </span> 🇮🇷 ایران</div>
+      <div class="iran-match-city">سیاتل</div>
+    </div>
+  </div>
+  <div class="info-box">
+    <h3>تحلیل گروه G برای ایران</h3>
+    بلژیک قوی‌ترین حریف است. بازی با نیوزیلند مهم‌ترین بازی برای کسب امتیاز است. دوئل با مصر احتمالاً تعیین‌کننده صعود خواهد بود — دو تیم دفاعی با محوریت ستارگان: <strong>طارمی</strong> برای ایران و <strong>صلاح</strong> برای مصر.
+  </div>
+</div>
+
+<!-- GROUP STAGE SCHEDULE (Key matches) -->
+<div class="section" id="schedule">
+  <div class="day-label">📅 ۱۱ ژوئن — بازی افتتاحیه</div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۱</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇲🇽 مکزیک <span class="vs">vs</span> 🇿🇦 آفریقای جنوبی</div>
+    <div class="match-info"><span class="match-group">گروه A</span><br>مکزیکو سیتی</div>
+  </div>
+
+  <div class="day-label">۱۲–۱۳ ژوئن</div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۲</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇺🇸 آمریکا <span class="vs">vs</span> 🇵🇾 پاراگوئه</div>
+    <div class="match-info"><span class="match-group">گروه D</span><br>لس‌آنجلس</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۳</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇧🇷 برزیل <span class="vs">vs</span> 🇲🇦 مراکش</div>
+    <div class="match-info"><span class="match-group">گروه C</span><br>نیوجرسی</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۳</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇵🇹 پرتغال <span class="vs">vs</span> 🇨🇩 کنگو</div>
+    <div class="match-info"><span class="match-group">گروه K</span><br>هیوستون</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۳</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🏴󠁧󠁢󠁥󠁮󠁧󠁿 انگلیس <span class="vs">vs</span> 🇭🇷 کرواسی</div>
+    <div class="match-info"><span class="match-group">گروه L</span><br>فیلادلفیا</div>
+  </div>
+
+  <div class="day-label">۱۴–۱۵ ژوئن</div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۴</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇦🇷 آرژانتین <span class="vs">vs</span> 🇩🇿 الجزایر</div>
+    <div class="match-info"><span class="match-group">گروه J</span><br>دالاس</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۴</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇪🇸 اسپانیا <span class="vs">vs</span> 🇺🇾 اروگوئه</div>
+    <div class="match-info"><span class="match-group">گروه H</span><br>میامی</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۵</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇮🇷 ایران <span class="vs">vs</span> 🇳🇿 نیوزیلند</div>
+    <div class="match-info"><span class="match-group">گروه G</span><br>لس‌آنجلس</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۵</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇫🇷 فرانسه <span class="vs">vs</span> 🇸🇳 سنگال</div>
+    <div class="match-info"><span class="match-group">گروه I</span><br>سانفرانسیسکو</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۵</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇩🇪 آلمان <span class="vs">vs</span> 🇨🇮 ساحل عاج</div>
+    <div class="match-info"><span class="match-group">گروه E</span><br>کانزاس سیتی</div>
+  </div>
+
+  <div class="day-label">۱۶–۲۱ ژوئن — دور دوم گروه‌ها</div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۷</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇧🇷 برزیل <span class="vs">vs</span> 🇭🇹 هائیتی</div>
+    <div class="match-info"><span class="match-group">گروه C</span><br>هیوستون</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۸</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇦🇷 آرژانتین <span class="vs">vs</span> 🇦🇹 اتریش</div>
+    <div class="match-info"><span class="match-group">گروه J</span><br>میامی</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۱۹</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇪🇸 اسپانیا <span class="vs">vs</span> 🇸🇦 عربستان</div>
+    <div class="match-info"><span class="match-group">گروه H</span><br>کانزاس سیتی</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۰</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇫🇷 فرانسه <span class="vs">vs</span> 🇳🇴 نروژ</div>
+    <div class="match-info"><span class="match-group">گروه I</span><br>دالاس</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۱</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇧🇪 بلژیک <span class="vs">vs</span> 🇮🇷 ایران</div>
+    <div class="match-info"><span class="match-group">گروه G</span><br>لس‌آنجلس</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۱</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇵🇹 پرتغال <span class="vs">vs</span> 🇺🇿 ازبکستان</div>
+    <div class="match-info"><span class="match-group">گروه K</span><br>بوستون</div>
+  </div>
+
+  <div class="day-label">۲۴–۲۷ ژوئن — دور سوم (آخر گروه‌ها)</div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۴</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇧🇷 برزیل <span class="vs">vs</span> 🏴󠁧󠁢󠁳󠁣󠁴󠁿 اسکاتلند</div>
+    <div class="match-info"><span class="match-group">گروه C</span><br>دالاس</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۵</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇦🇷 آرژانتین <span class="vs">vs</span> 🇯🇴 اردن</div>
+    <div class="match-info"><span class="match-group">گروه J</span><br>سیاتل</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۶</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇪🇬 مصر <span class="vs">vs</span> 🇮🇷 ایران</div>
+    <div class="match-info"><span class="match-group">گروه G</span><br>سیاتل</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۷</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇵🇹 پرتغال <span class="vs">vs</span> 🇨🇴 کلمبیا</div>
+    <div class="match-info"><span class="match-group">گروه K</span><br>میامی</div>
+  </div>
+  <div class="match-card">
+    <div class="match-date"><div class="day">۲۷</div><div class="month">ژوئن</div></div>
+    <div class="match-teams">🇫🇷 فرانسه <span class="vs">vs</span> 🇮🇶 عراق</div>
+    <div class="match-info"><span class="match-group">گروه I</span><br>نیویورک</div>
+  </div>
+</div>
+
+<!-- KNOCKOUT -->
+<div class="section" id="knockout">
+  <div class="round-label">🔵 مرحله ۳۲ تیم — ۲۸ ژوئن تا ۴ ژوئیه</div>
+  <div class="ko-grid">
+    <div class="ko-match"><div class="ko-date">۲۸–۳۰ ژوئن</div><div class="ko-teams">اول گروه A vs دوم گروه B</div><div class="ko-venue">لس‌آنجلس</div></div>
+    <div class="ko-match"><div class="ko-date">۲۸–۳۰ ژوئن</div><div class="ko-teams">اول گروه B vs دوم گروه A</div><div class="ko-venue">ونکوور</div></div>
+    <div class="ko-match"><div class="ko-date">۱–۴ ژوئیه</div><div class="ko-teams">اول گروه C vs دوم گروه D</div><div class="ko-venue">میامی</div></div>
+    <div class="ko-match"><div class="ko-date">۱–۴ ژوئیه</div><div class="ko-teams">اول گروه D vs دوم گروه C</div><div class="ko-venue">دالاس</div></div>
+    <div class="ko-match"><div class="ko-date">۱–۴ ژوئیه</div><div class="ko-tokens">اول گروه H vs دوم گروه J</div><div class="ko-teams">اول گروه H vs دوم گروه J</div><div class="ko-venue">هیوستون</div></div>
+    <div class="ko-match"><div class="ko-date">۱–۴ ژوئیه</div><div class="ko-teams">اول گروه I vs دوم گروه K</div><div class="ko-venue">فیلادلفیا</div></div>
+  </div>
+
+  <div class="round-label">🟡 یک‌هشتم نهایی — ۵–۸ ژوئیه</div>
+  <div class="ko-grid">
+    <div class="ko-match"><div class="ko-date">۵–۸ ژوئیه</div><div class="ko-teams">برنده م۷۳ vs برنده م۷۵</div><div class="ko-venue">هیوستون</div></div>
+    <div class="ko-match"><div class="ko-date">۵–۸ ژوئیه</div><div class="ko-teams">برنده م۷۴ vs برنده م۷۷</div><div class="ko-venue">فیلادلفیا</div></div>
+    <div class="ko-match"><div class="ko-date">۵–۸ ژوئیه</div><div class="ko-teams">برنده م۷۶ vs برنده م۷۸</div><div class="ko-venue">دالاس</div></div>
+    <div class="ko-match"><div class="ko-date">۵–۸ ژوئیه</div><div class="ko-teams">برنده م۷۹ vs برنده م۸۲</div><div class="ko-venue">سانفرانسیسکو</div></div>
+  </div>
+
+  <div class="round-label">🟠 یک‌چهارم نهایی — ۹–۱۱ ژوئیه</div>
+  <div class="ko-grid">
+    <div class="ko-match"><div class="ko-date">۹ ژوئیه</div><div class="ko-teams">ربع نهایی ۱</div><div class="ko-venue">میامی</div></div>
+    <div class="ko-match"><div class="ko-date">۹ ژوئیه</div><div class="ko-teams">ربع نهایی ۲</div><div class="ko-venue">لس‌آنجلس</div></div>
+    <div class="ko-match"><div class="ko-date">۱۱ ژوئیه</div><div class="ko-teams">ربع نهایی ۳</div><div class="ko-venue">نیویورک</div></div>
+    <div class="ko-match"><div class="ko-date">۱۱ ژوئیه</div><div class="ko-teams">ربع نهایی ۴</div><div class="ko-venue">دالاس</div></div>
+  </div>
+
+  <div class="round-label">🔴 نیمه‌نهایی — ۱۴–۱۵ ژوئیه</div>
+  <div class="ko-grid">
+    <div class="ko-match"><div class="ko-date">۱۴ ژوئیه</div><div class="ko-teams">نیمه‌نهایی اول</div><div class="ko-venue">دالاس</div></div>
+    <div class="ko-match"><div class="ko-date">۱۵ ژوئیه</div><div class="ko-teams">نیمه‌نهایی دوم</div><div class="ko-venue">نیویورک</div></div>
+  </div>
+
+  <div class="round-label">🥉 رده‌بندی — ۱۸ ژوئیه</div>
+  <div class="ko-grid">
+    <div class="ko-match"><div class="ko-date">۱۸ ژوئیه</div><div class="ko-teams">بازی رده‌بندی سوم</div><div class="ko-venue">میامی</div></div>
+  </div>
+
+  <div class="final-card">
+    <div class="final-title">🏆 فینال</div>
+    <div class="final-date">۱۹ ژوئیه ۲۰۲۶</div>
+    <div class="final-venue">MetLife Stadium — نیوجرسی (نیویورک)</div>
+  </div>
+</div>
+
+<!-- INFO -->
+<div class="section" id="info">
+  <div class="info-box">
+    <h3>📊 اطلاعات کلی تورنومنت</h3>
+    • تعداد تیم‌ها: <strong>۴۸</strong> تیم (رکورد جدید)<br>
+    • تعداد بازی‌ها: <strong>۱۰۴</strong> بازی<br>
+    • مدت: <strong>۳۹</strong> روز<br>
+    • میزبان: آمریکا، کانادا، مکزیک<br>
+    • تعداد شهرها: <strong>۱۶</strong> ورزشگاه<br>
+    • فرمت جدید: دور ۳۲ تیم اضافه شده
+  </div>
+  <div class="info-box">
+    <h3>🏟️ شهرهای میزبان</h3>
+    <span class="badge">🇺🇸 نیویورک</span>
+    <span class="badge">🇺🇸 لس‌آنجلس</span>
+    <span class="badge">🇺🇸 دالاس</span>
+    <span class="badge">🇺🇸 هیوستون</span>
+    <span class="badge">🇺🇸 میامی</span>
+    <span class="badge">🇺🇸 سانفرانسیسکو</span>
+    <span class="badge">🇺🇸 فیلادلفیا</span>
+    <span class="badge">🇺🇸 سیاتل</span>
+    <span class="badge">🇺🇸 کانزاس سیتی</span>
+    <span class="badge">🇺🇸 بوستون</span>
+    <span class="badge">🇨🇦 تورنتو</span>
+    <span class="badge">🇨🇦 ونکوور</span>
+    <span class="badge">🇲🇽 مکزیکو سیتی</span>
+    <span class="badge">🇲🇽 گوادالاخارا</span>
+    <span class="badge">🇲🇽 مونتری</span>
+  </div>
+  <div class="info-box">
+    <h3>⭐ مدعیان قهرمانی</h3>
+    🇪🇸 اسپانیا — فیووریت اصلی (~۱۸٪)<br>
+    🇫🇷 فرانسه — دوم (~۱۷٪)<br>
+    🏴󠁧󠁢󠁥󠁮󠁧󠁿 انگلیس — سوم (~۱۱٪)<br>
+    🇧🇷 برزیل — چهارم (~۱۱٪)<br>
+    🇦🇷 آرژانتین — پنجم (~۱۰٪)
+  </div>
+</div>
+
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
